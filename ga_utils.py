@@ -125,7 +125,7 @@ class AnalyticsData:
         plt.savefig(u.dir()+'/bar_versions', bbox_inches = 'tight')
         return bar_plot
 
-    def diff(self,df, filter_dim='', filter_val='',ref_dim, title='diff_v'):
+    def diff(self,df, ref_dim, filter_dim='', filter_val='', title='diff_v'):
         """ Compare 1 dimension value to the rest """
         self.filter_d(df, filter_dim, filter_val)
         df = df.groupby(by=[self.version]).sum()
@@ -145,7 +145,7 @@ class AnalyticsData:
         df_cr.reset_index().plot(title=title).legend(loc='center left', bbox_to_anchor=(1, 0.5)) if not ylim else df_cr.reset_index().plot(title=title, ylim=ylim).legend(loc='center left', bbox_to_anchor=(1, 0.5))
         plt.savefig(u.dir()+'/cumulative', bbox_inches = 'tight')
 
-    def diff_cumul(self,df, filter_dim='', filter_val='',ref_dim, title='cumulative_diff',ylim=()):
+    def diff_cumul(self,df, ref_dim, filter_dim='', filter_val='',title='cumulative_diff',ylim=()):
         """ Compare 1 dimension value to the rest cumulatively with line chart """
         self.filter_d(df, filter_dim, filter_val)
         df = df.groupby(['date', self.version]).sum()
