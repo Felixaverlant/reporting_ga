@@ -108,7 +108,7 @@ class AnalyticsData:
 
     def ts(self, df, title='ts', filter_dim='', filter_val='', ylim=()):
         """ Time series line chart """
-        self.filter_d(df, filter_dim, filter_val)
+        df = self.filter_d(df, filter_dim, filter_val)
         ts_versions = df.groupby(["date", self.version]).sum()
         ts_versions['CR'] = ts_versions[self.goal] / ts_versions[self.metric] * 100
         ts = ts_versions.reset_index().pivot(index='date', columns=self.version, values='CR')
@@ -118,7 +118,7 @@ class AnalyticsData:
 
     def bar(self,df, filter_dim='', filter_val='', title='bar_versions'):
         """ Barchart line chart """
-        self.filter_d(df, filter_dim, filter_val)
+        df = self.filter_d(df, filter_dim, filter_val)
         df = df.groupby(by=[self.version]).sum()
         df['CR'] = df[self.goal] / df[self.metric] * 100
         bar_plot = self.bar_annotate(df['CR'].sort_values(ascending=False).plot.bar(title=title))
@@ -127,7 +127,7 @@ class AnalyticsData:
 
     def diff(self,df, ref_dim, filter_dim='', filter_val='', title='diff_v'):
         """ Compare 1 dimension value to the rest """
-        self.filter_d(df, filter_dim, filter_val)
+        df = self.filter_d(df, filter_dim, filter_val)
         df = df.groupby(by=[self.version]).sum()
         df['CR'] = df[self.goal] / df[self.metric]
         against_dim = df.reset_index()[df.reset_index()[self.version] == ref_dim]['CR'].iloc[0]
@@ -137,7 +137,7 @@ class AnalyticsData:
 
     def cumulative(self,df, filter_dim='', filter_val='', title='cumulative', ylim=()):
         """ Cumulative line chart that calculate Conversion rate """
-        self.filter_d(df, filter_dim, filter_val)
+        df = self.filter_d(df, filter_dim, filter_val)
         df = df.groupby(['date', self.version]).sum()
         df_metric = df.reset_index().pivot(index='date',columns=self.version, values=self.metric).cumsum()
         df_goal = df.reset_index().pivot(index='date',columns=self.version, values=self.goal).cumsum()
@@ -145,9 +145,9 @@ class AnalyticsData:
         df_cr.reset_index().plot(title=title).legend(loc='center left', bbox_to_anchor=(1, 0.5)) if not ylim else df_cr.reset_index().plot(title=title, ylim=ylim).legend(loc='center left', bbox_to_anchor=(1, 0.5))
         plt.savefig(u.dir()+'/cumulative', bbox_inches = 'tight')
 
-    def diff_cumul(self,df, ref_dim, filter_dim='', filter_val='',title='cumulative_diff',ylim=()):
+    def diff_cumul(self,df, ref_dim, filter_dim='', filter_val='', title='cumulative_diff',ylim=()):
         """ Compare 1 dimension value to the rest cumulatively with line chart """
-        self.filter_d(df, filter_dim, filter_val)
+        df = self.filter_d(df, filter_dim, filter_val)
         df = df.groupby(['date', self.version]).sum()
         df_metric = df.reset_index().pivot(index='date',columns=self.version, values=self.metric).cumsum()
         df_goal = df.reset_index().pivot(index='date',columns=self.version, values=self.goal).cumsum()
@@ -161,7 +161,7 @@ class AnalyticsData:
             b=p.get_bbox()
             ax.annotate("{:+.2f}".format(b.y1 + b.y0), ((b.x0 + b.x1)/2 - 0.03, b.y1 + 0.02))
 
-    def filter_d(self, df):
-        if self.filter_dim != '' or self.filter_val!='':
-            df = df[df[self.filter_dim] == self.filter_val]
+    def filter_d(self, df, filter_dim='',filter_val=''):
+        if filter_dim != '' or filter_val!='':
+            df = df[df[filter_dim] == filter_val]
         return df
